@@ -26,6 +26,13 @@ import os.path
 # it as a submodule of current module
 #
 def searchWAAgent():
+    # Debian 8.7 fix (missing /usr/sbin/waagent2.0). This requires the waagent 2.0 file
+    # to be downloaded/copied first. E.g, Run the following command first from the Utils directory:
+    # $ wget https://raw.githubusercontent.com/Azure/azure-linux-extensions/master/Common/WALinuxAgent-2.0.16/waagent
+    agentPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'waagent')
+    if os.path.isfile(agentPath):
+        return agentPath
+
     agentPath = '/usr/sbin/waagent'
     if(os.path.isfile(agentPath)):
         return agentPath
