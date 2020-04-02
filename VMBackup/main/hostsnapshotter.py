@@ -75,7 +75,9 @@ class HostSnapshotter(object):
                 http_util = HttpUtil(self.logger)
                 self.logger.log("start calling the snapshot rest api")
                 # initiate http call for blob-snapshot and get http response
-                result, httpResp, errMsg,responseBody = http_util.HttpCallGetResponse('POST', snapshoturi_obj, body_content, headers = headers, responseBodyRequired = True, isHttpCall = True)
+                self.logger.log('****** 5. Snaphotting (Host) Started')
+                result, httpResp, errMsg,responseBody = http_util.HttpCallGetResponse('POST', snapshoturi_obj, body_content, headers = headers, responseBodyRequired = True, isHostCall = True)
+                self.logger.log('****** 6. Snaphotting (Host) Completed')
                 self.logger.log("dosnapshot responseBody: " + responseBody)
                 if(httpResp != None):
                     HandlerUtil.HandlerUtility.add_to_telemetery_data(CommonVariables.hostStatusCodeDoSnapshot, str(httpResp.status))
@@ -104,6 +106,7 @@ class HostSnapshotter(object):
         except Exception as e:
             errorMsg = "Failed to do the snapshot in host with error: %s, stack trace: %s" % (str(e), traceback.format_exc())
             self.logger.log(errorMsg, False, 'Error')
+            HandlerUtil.HandlerUtility.add_to_telemetery_data(CommonVariables.hostStatusCodeDoSnapshot, str(558))
             all_failed = True
         return blob_snapshot_info_array, all_failed, is_inconsistent, unable_to_sleep
 
@@ -128,7 +131,7 @@ class HostSnapshotter(object):
                 http_util = HttpUtil(self.logger)
                 self.logger.log("start calling the presnapshot rest api")
                 # initiate http call for blob-snapshot and get http response
-                result, httpResp, errMsg,responseBody = http_util.HttpCallGetResponse('POST', presnapshoturi_obj, body_content, headers = headers, responseBodyRequired = True, isHttpCall = True)
+                result, httpResp, errMsg,responseBody = http_util.HttpCallGetResponse('POST', presnapshoturi_obj, body_content, headers = headers, responseBodyRequired = True, isHostCall = True)
                 self.logger.log("presnapshot responseBody: " + responseBody)
                 if(httpResp != None):
                     statusCode = httpResp.status
@@ -145,6 +148,7 @@ class HostSnapshotter(object):
         except Exception as e:
             errorMsg = "Failed to do the pre snapshot in host with error: %s, stack trace: %s" % (str(e), traceback.format_exc())
             self.logger.log(errorMsg, False, 'Error')
+            statusCode = 558
         HandlerUtil.HandlerUtility.add_to_telemetery_data(CommonVariables.hostStatusCodePreSnapshot, str(statusCode))
         return statusCode
 
